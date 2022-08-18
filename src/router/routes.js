@@ -18,6 +18,18 @@ const routes = [
             {
                 path: '',
                 redirect: '/admin/dashboard'
+            },
+            {
+                path: 'user',
+                component: () => import('../views/admin/User.vue')
+            },
+            {
+                path: 'role',
+                component: () => import('../views/admin/Role.vue')
+            },
+            {
+                path: 'permission',
+                component: () => import('../views/admin/Permission.vue')
             }
         ]
     }
