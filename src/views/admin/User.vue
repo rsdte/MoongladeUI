@@ -1,25 +1,25 @@
 <template>
     <section>
-        <el-form :inline="true" :model="form">
+        <el-form :inline="true" :model="searchDto">
             <el-form-item label="用户名称">
-                <el-input v-model="form.name" />
+                <el-input v-model="searchDto.username" />
             </el-form-item>
             <el-form-item label="账号状态">
-                <el-select v-model="form.region" placeholder="选择用户账号状态">
-                    <el-option label="Zone one" value="shanghai" />
-                    <el-option label="Zone two" value="beijing" />
+                <el-select v-model="searchDto.status" placeholder="选择用户账号状态">
+                    <el-option label="启用" value="0" />
+                    <el-option label="禁用" value="1" />
                 </el-select>
             </el-form-item>
             <el-form-item label="创建时间">
-                <el-date-picker v-model="value2" type="daterange" start-placeholder="Start Date"
-                    end-placeholder="End Date" :default-value="[new Date(2010, 9, 1), new Date(2010, 10, 1)]" />
+                <el-date-picker v-model="searchDto.dateTime" type="datetimerange" range-separator="To"
+                    start-placeholder="开始时间" end-placeholder="结束时间" />
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="onSubmit">搜索</el-button>
+                <el-button type="primary" @click="onSearch">搜索</el-button>
             </el-form-item>
         </el-form>
         <el-row>
-            <el-button type="primary" @click="onSubmit">新增</el-button>
+            <el-button type="primary" @click="onAdd">新增</el-button>
         </el-row>
         <el-row>
             <el-table offset="4" span="20" :data="tableData" height="600">
@@ -42,6 +42,41 @@
 </template>
 <script setup>
 import { reactive } from 'vue'
+import { useUserStore } from '../../store/users';
+
+const userStore = useUserStore();
+const searchDto = reactive({
+    username: '',
+    status: '启用',
+    dateTime: [
+        new Date(2000, 10, 10, 10, 10),
+        new Date(2000, 10, 11, 10, 10),
+    ]
+});
+
+async function loadUsers(index, size = 15) {
+    let status = searchDto.status === '启用' ? 0 : 1;
+    let startTime = searchDto.dateTime[0];
+    let endTime = searchDto.dateTime[1];
+    await userStore.getUsers(searchDto.username, status, startTime, endTime, index, size);
+}
+
+loadUsers(1)
+
+async function onSearch() {
+    await loadUsers(1);
+}
+
+
+const onAdd = function () {
+    console.log("adddd..........")
+}
+
+
+
+
+
+//await userStore.getUsers(searchDto);
 
 // do not use same name with ref
 const form = reactive({

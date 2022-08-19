@@ -3,7 +3,7 @@ import axios from "axios"
 
 const config = {
     timeout: 5000,
-    baseURL: 'http://localhost:8080'
+    baseURL: 'http://localhost:5096'
 }
 
 class Http {
@@ -11,9 +11,8 @@ class Http {
         this.service = axios.create(config);
 
         this.service.interceptors.request.use((config) => {
-            if (localStorage.getItem('token') && localStorage.getItem('tokenKey')) {
-                (config.headers).authorization = localStorage.getItem('token');
-                (config.headers).authorizationKey = localStorage.getItem('tokenKey');
+            if (localStorage.getItem('token')) {
+                (config.headers).authorization = "Bearer " + localStorage.getItem('token');
             }
             return config;
         }, error => {
@@ -29,20 +28,52 @@ class Http {
         });
     }
 
-    get(url, params, _object = {}) {
-        return this.service.get(url, { params, ..._object });
+    get(url, params = {}) {
+        return new Promise((resolve, reject) => {
+            this.service.get(url, params)
+                .then(res => {
+                    resolve(res);
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+        })
     }
 
-    post(url, params, _object = {}) {
-        return this.service.post(url, params, _object);
+    post(url, data) {
+        return new Promise((resolve, reject) => {
+            this.service.post(url, data)
+                .then(res => {
+                    resolve(res)
+                })
+                .catch((err) => {
+                    reject(err)
+                });
+        });
     }
 
-    put(url, params, _object = {}) {
-        return this.service.put(url, params, _object);
+    put(url, data) {
+        return new Promise((resolve, reject) => {
+            this.service.put(url, data)
+                .then((res) => {
+                    resolve(res);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
-    delete(url, params, _object = {}) {
-        return this.service.delete(url, { params, ..._object })
+    delete(url, params = {}) {
+        return new Promise((resolve, reject) => {
+            this.service.delete(url, params)
+                .then((res) => {
+                    resolve(res);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 }
 
