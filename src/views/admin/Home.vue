@@ -1,6 +1,11 @@
 <script setup>
 
 import { ref } from 'vue'
+import { usePermissionStore } from '../../store/permission'
+
+const permissionStore = usePermissionStore();
+
+permissionStore.loadMenus()
 
 const activeIndex = ref('1')
 const handleSelect = (key, keyPath) => {
@@ -48,21 +53,16 @@ const handleSelect = (key, keyPath) => {
                     <el-scrollbar>
                         <el-menu :default-openeds="['1', '3']" active-text-color="#ffffff" background-color="#393d49"
                             text-color="#ffffff">
-                            <el-sub-menu index="3-1">
-                                <template #title>Option 4</template>
-                                <el-menu-item index="3-1-1">Option 4-1</el-menu-item>
-                            </el-sub-menu>
-                            <el-sub-menu index="3-2">
-                                <template #title>Option 4</template>
-                                <el-menu-item index="3-2-1">Option 4-1</el-menu-item>
-                            </el-sub-menu>
-                            <el-sub-menu index="3-3">
-                                <template #title>Option 4</template>
-                                <el-menu-item index="3-3-1">Option 4-1</el-menu-item>
-                            </el-sub-menu>
-                            <el-sub-menu index="3-4">
-                                <template #title>Option 4</template>
-                                <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
+                            <el-sub-menu v-for="(item, index) in permissionStore.menus" :key="item.id" :index="item.id">
+                                <template v-if="item.hasChildren" #title>
+                                    <el-icon :size="size" :color="color">
+                                        <Edit />
+                                    </el-icon>
+                                    {{ item.displayName }}
+                                </template>
+                                <el-menu-item v-if="item.hasChildren" v-for="subItem in item.children" :key="item.id"
+                                    :index="item.id">{{ subItem.displayName }}
+                                </el-menu-item>
                             </el-sub-menu>
                         </el-menu>
                     </el-scrollbar>
